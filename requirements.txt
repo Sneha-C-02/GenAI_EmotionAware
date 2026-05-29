@@ -1,7 +1,11 @@
 streamlit
-plotly
 pandas
-numpy
-scikit-learn
-transformers
+plotly
 torch
+transformers
+accelerate
+bitsandbytes
+faiss-cpu
+numpy
+scipy
+scikit-learn
