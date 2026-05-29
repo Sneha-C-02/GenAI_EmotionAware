@@ -16,24 +16,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Glassmorphism, Dark Theme, and Beautiful Spacing
+# Custom CSS for Glassmorphism, Light Theme, and Beautiful Spacing
 st.markdown("""
 <style>
     /* Global App Styling */
     .stApp {
-        background-color: #0E1117;
-        color: #E0E6ED;
+        background-color: #FFFFFF;
+        color: #000000;
         font-family: 'Inter', sans-serif;
     }
     
     /* Research Banner */
     .research-banner {
-        background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 50%, rgba(15, 52, 96, 0.8) 100%);
+        background: linear-gradient(135deg, rgba(240, 240, 245, 0.8) 0%, rgba(230, 235, 245, 0.8) 50%, rgba(220, 230, 245, 0.8) 100%);
         padding: 25px 35px;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         text-align: center;
@@ -42,13 +42,13 @@ st.markdown("""
         margin: 0;
         font-weight: 700;
         letter-spacing: -0.5px;
-        color: #FFFFFF;
+        color: #000000;
         font-size: 2.2em;
     }
     .research-banner h3 {
         margin: 8px 0 15px 0;
         font-weight: 300;
-        color: #A0C3FF;
+        color: #333333;
         font-size: 1.1em;
     }
     .status-indicator {
@@ -56,32 +56,32 @@ st.markdown("""
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background-color: #00E676;
+        background-color: #00C853;
         margin-right: 8px;
-        box-shadow: 0 0 10px #00E676;
+        box-shadow: 0 0 10px #00C853;
         animation: pulse 2s infinite;
     }
     @keyframes pulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 200, 83, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
     }
 
     /* Glassmorphism Cards */
     .glass-card {
-        background: rgba(25, 30, 40, 0.6);
+        background: rgba(255, 255, 255, 0.6);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.08);
         padding: 20px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
     .glass-card h4 {
         margin-top: 0;
-        color: #A0C3FF;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        color: #000000;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
         padding-bottom: 10px;
         margin-bottom: 15px;
         font-weight: 500;
@@ -89,19 +89,20 @@ st.markdown("""
     
     /* Document Retrieval Cards */
     .doc-card {
-        background: rgba(15, 52, 96, 0.3);
+        background: rgba(220, 230, 245, 0.3);
         border-left: 4px solid #4E6E81;
         padding: 12px 15px;
         margin-bottom: 10px;
         border-radius: 0 8px 8px 0;
         font-size: 0.9em;
         line-height: 1.4;
+        color: #000000;
     }
     
     /* Gate Status Colors */
-    .gate-safe { color: #00E676; font-weight: bold; }
-    .gate-warn { color: #FFEA00; font-weight: bold; }
-    .gate-danger { color: #FF1744; font-weight: bold; }
+    .gate-safe { color: #00C853; font-weight: bold; }
+    .gate-warn { color: #F57F17; font-weight: bold; }
+    .gate-danger { color: #D50000; font-weight: bold; }
 
     /* Hide Streamlit elements for cleaner look */
     #MainMenu {visibility: hidden;}
@@ -175,12 +176,12 @@ def create_gauge(value, title, min_val, max_val, color):
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=value,
-        title={'text': title, 'font': {'size': 14, 'color': '#E0E6ED'}},
+        title={'text': title, 'font': {'size': 14, 'color': '#000000'}},
         number={'font': {'color': color, 'size': 24}},
         gauge={
-            'axis': {'range': [min_val, max_val], 'tickcolor': "#E0E6ED"},
+            'axis': {'range': [min_val, max_val], 'tickcolor': "#000000"},
             'bar': {'color': color},
-            'bgcolor': "rgba(255,255,255,0.05)",
+            'bgcolor': "rgba(0,0,0,0.05)",
             'borderwidth': 0,
         }
     ))
@@ -188,7 +189,7 @@ def create_gauge(value, title, min_val, max_val, color):
         height=150, 
         margin=dict(l=10, r=10, t=30, b=10), 
         paper_bgcolor="rgba(0,0,0,0)", 
-        font={'color': "#E0E6ED"}
+        font={'color': "#000000"}
     )
     return fig
 
@@ -199,21 +200,21 @@ def create_radar(vad):
         r=[v, a, d],
         theta=['Valence', 'Arousal', 'Dominance'],
         fill='toself',
-        fillcolor='rgba(0, 230, 118, 0.2)',
-        line_color='#00E676',
+        fillcolor='rgba(0, 200, 83, 0.2)',
+        line_color='#00C853',
         name='Current State'
     ))
     fig.update_layout(
         polar=dict(
-            radialaxis=dict(visible=True, range=[-1, 1], gridcolor="rgba(255,255,255,0.1)"),
-            angularaxis=dict(gridcolor="rgba(255,255,255,0.1)")
+            radialaxis=dict(visible=True, range=[-1, 1], gridcolor="rgba(0,0,0,0.1)"),
+            angularaxis=dict(gridcolor="rgba(0,0,0,0.1)")
         ),
         showlegend=False,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         height=250,
         margin=dict(l=30, r=30, t=30, b=30),
-        font={'color': "#E0E6ED"}
+        font={'color': "#000000"}
     )
     return fig
 
@@ -223,21 +224,21 @@ def create_timeline(history):
     
     turns = list(range(1, len(history["valence"]) + 1))
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=turns, y=history["valence"], mode='lines+markers', name='Valence', line=dict(color='#00E676')))
-    fig.add_trace(go.Scatter(x=turns, y=history["arousal"], mode='lines+markers', name='Arousal', line=dict(color='#FFEA00')))
+    fig.add_trace(go.Scatter(x=turns, y=history["valence"], mode='lines+markers', name='Valence', line=dict(color='#00C853')))
+    fig.add_trace(go.Scatter(x=turns, y=history["arousal"], mode='lines+markers', name='Arousal', line=dict(color='#F57F17')))
     fig.add_trace(go.Scatter(x=turns, y=history["dominance"], mode='lines+markers', name='Dominance', line=dict(color='#2979FF')))
     
     fig.update_layout(
         title="Emotional Trajectory",
         xaxis_title="Turn",
         yaxis_title="Intensity",
-        yaxis=dict(range=[-1, 1], gridcolor="rgba(255,255,255,0.1)"),
-        xaxis=dict(gridcolor="rgba(255,255,255,0.1)"),
+        yaxis=dict(range=[-1, 1], gridcolor="rgba(0,0,0,0.1)"),
+        xaxis=dict(gridcolor="rgba(0,0,0,0.1)"),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         height=250,
         margin=dict(l=10, r=10, t=30, b=10),
-        font={'color': "#E0E6ED"},
+        font={'color': "#000000"},
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     return fig
@@ -249,7 +250,7 @@ def create_timeline(history):
 with st.sidebar:
     st.markdown("### System Architecture")
     st.markdown("""
-    <div style='background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;'>
+    <div style='background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #000000;'>
         <div style='margin-bottom: 8px;'>✅ <b>Emotion Model</b> (GoEmotions)</div>
         <div style='margin-bottom: 8px;'>✅ <b>Episodic Memory</b> (7-Turn Buffer)</div>
         <div style='margin-bottom: 8px;'>✅ <b>Emotion RAG</b> (FAISS)</div>
@@ -282,7 +283,7 @@ st.markdown("""
 <div class="research-banner">
     <h1>Emotion-Aware Retrieval-Augmented Generation</h1>
     <h3>Emotion Detection + Episodic Memory + Emotion-Aware Retrieval + Behavioral Safety Gate</h3>
-    <div style="font-size: 0.9em; color: #E0E6ED;"><span class="status-indicator"></span> System Online &bull; Research Inference Mode</div>
+    <div style="font-size: 0.9em; color: #333333;"><span class="status-indicator"></span> System Online &bull; Research Inference Mode</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -296,7 +297,7 @@ chat_col, dash_col = st.columns([1.3, 1])
 # CHAT AREA
 # ------------------------------------------
 with chat_col:
-    st.markdown("<h3 style='margin-top:0; color:#A0C3FF;'>Interactive Demonstration</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-top:0; color:#333333;'>Interactive Demonstration</h3>", unsafe_allow_html=True)
     
     chat_container = st.container(height=650, border=False)
     
@@ -343,11 +344,11 @@ with dash_col:
         """, unsafe_allow_html=True)
         
         top_em = data["emotion"]["top_emotions"][0]
-        st.markdown(f"<div style='text-align:center; font-size:1.5em; margin-bottom:10px;'>Primary: <b style='color:#00E676; text-transform:capitalize;'>{top_em['label']}</b> ({top_em['score']:.2f})</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align:center; font-size:1.5em; margin-bottom:10px;'>Primary: <b style='color:#00C853; text-transform:capitalize;'>{top_em['label']}</b> ({top_em['score']:.2f})</div>", unsafe_allow_html=True)
         
         g1, g2, g3 = st.columns(3)
-        with g1: st.plotly_chart(create_gauge(data["vad"][0], "Valence", -1, 1, "#00E676"), use_container_width=True, config={'displayModeBar': False})
-        with g2: st.plotly_chart(create_gauge(data["vad"][1], "Arousal", -1, 1, "#FFEA00"), use_container_width=True, config={'displayModeBar': False})
+        with g1: st.plotly_chart(create_gauge(data["vad"][0], "Valence", -1, 1, "#00C853"), use_container_width=True, config={'displayModeBar': False})
+        with g2: st.plotly_chart(create_gauge(data["vad"][1], "Arousal", -1, 1, "#F57F17"), use_container_width=True, config={'displayModeBar': False})
         with g3: st.plotly_chart(create_gauge(data["vad"][2], "Dominance", -1, 1, "#2979FF"), use_container_width=True, config={'displayModeBar': False})
         
         st.markdown("</div>", unsafe_allow_html=True)
@@ -368,7 +369,7 @@ with dash_col:
                 <h4>🛡️ Behavioral Gate</h4>
                 <div style='text-align:center; margin: 15px 0;'>
                     <span style='font-size: 2.5em; display:block;' class='{css}'>{(prob*100):.1f}%</span>
-                    <span style='font-size: 0.9em; color: #B0C4DE;'>Advice Probability</span>
+                    <span style='font-size: 0.9em; color: #555555;'>Advice Probability</span>
                 </div>
                 <div style='text-align:center;' class='{css}'>Status: {status}</div>
             </div>""", unsafe_allow_html=True)
@@ -376,12 +377,12 @@ with dash_col:
         with col_m:
             st.markdown(f"""<div class="glass-card" style="height: 100%;">
                 <h4>💭 Episodic Memory</h4>
-                <div style='font-size:0.9em; color:#E0E6ED; line-height:1.5;'>
+                <div style='font-size:0.9em; color:#000000; line-height:1.5;'>
                     <b>Summary:</b> {data['memory'].get('summary', 'No summary available.')}
                 </div>
                 <div style='margin-top:10px; font-size:0.85em;'>
-                    Arc Direction: <span style='color:#A0C3FF;'>{data['memory'].get('arc_direction', 'N/A').title()}</span><br>
-                    State: <span style='color:#A0C3FF;'>{data['memory'].get('dominant_state', 'N/A').replace('_', ' ').title()}</span>
+                    Arc Direction: <span style='color:#333333;'>{data['memory'].get('arc_direction', 'N/A').title()}</span><br>
+                    State: <span style='color:#333333;'>{data['memory'].get('dominant_state', 'N/A').replace('_', ' ').title()}</span>
                 </div>
             </div>""", unsafe_allow_html=True)
             
