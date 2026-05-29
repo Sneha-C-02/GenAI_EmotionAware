@@ -116,44 +116,8 @@ st.markdown("""
 # ==========================================
 @st.cache_resource
 def get_backend():
-    try:
-        from backend import EmotionAwareChatbot
-        return EmotionAwareChatbot()
-    except ImportError:
-        # Mock backend for demo purposes if backend.py is not present or runnable
-        class MockBackend:
-            def analyze(self, user_text):
-                return {
-                    "emotion": {
-                        "top_emotions": [{"label": "sadness", "score": 0.87}, {"label": "anxiety", "score": 0.45}],
-                        "valence": -0.65,
-                        "arousal": 0.45,
-                        "dominance": -0.30
-                    },
-                    "vad": (-0.65, 0.45, -0.30),
-                    "docs": [
-                        "That sounds really isolating. Being left behind can feel incredibly lonely.",
-                        "It makes complete sense that you'd feel hurt given what happened.",
-                        "Your feelings are completely valid. That kind of pressure would overwhelm anyone."
-                    ],
-                    "reasoning": {"mode": "vad_augmented"}
-                }
-            def generate_response(self, user_text):
-                time.sleep(1.5) # Simulate processing
-                analysis = self.analyze(user_text)
-                return {
-                    "response": "That sounds really painful. It makes complete sense that you'd feel so isolated right now. How are you holding up?",
-                    "emotion": analysis["emotion"],
-                    "vad": analysis["vad"],
-                    "docs": analysis["docs"],
-                    "memory": {
-                        "summary": "The user has been expressing loneliness and isolation across multiple turns.",
-                        "arc_direction": "declining",
-                        "dominant_state": "social_withdrawal"
-                    },
-                    "gate_probability": 0.08
-                }
-        return MockBackend()
+    from backend import EmotionAwareChatbot
+    return EmotionAwareChatbot()
 
 backend = get_backend()
 
