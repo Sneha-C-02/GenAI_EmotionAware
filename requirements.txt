@@ -1,8 +1,7 @@
 streamlit
+plotly
 pandas
 numpy
 scikit-learn
-sentence-transformers
-faiss-cpu
 transformers
 torch
