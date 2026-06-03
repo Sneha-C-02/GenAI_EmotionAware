@@ -1,0 +1,265 @@
+import torch
+
+from emotion_model import EmotionModel
+from rag_pipeline_v2 import EmotionAwareRAGv2
+from episodic_memory import EpisodicMemory
+from behavioral_gate import BehavioralGate
+
+from transformers import (
+    AutoTokenizer,
+    AutoModelForCausalLM,
+    BitsAndBytesConfig,
+)
+
+from config import LLM_MODEL_PATH
+
+# --------------------------------------------------
+# LOAD COMPONENTS
+# --------------------------------------------------
+
+print("Loading Emotion Model...")
+emotion = EmotionModel()
+
+print("Loading RAG...")
+rag = EmotionAwareRAGv2()
+
+print("Loading Episodic Memory...")
+memory = EpisodicMemory()
+
+print("Loading Behavioral Gate...")
+gate = BehavioralGate()
+gate.load()
+
+print("Loading Mistral...")
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True,
+)
+
+tokenizer = AutoTokenizer.from_pretrained(
+    LLM_MODEL_PATH,
+    local_files_only=True,
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    LLM_MODEL_PATH,
+    device_map="auto",
+    quantization_config=bnb,
+    torch_dtype=torch.float16,
+    local_files_only=True,
+)
+
+model.eval()
+
+print("\n========================================")
+print(" Emotion-Aware RAG Chatbot")
+print(" Emotion + Memory + RAG + Gate")
+print(" Type 'exit' to quit")
+print("========================================")
+
+SYSTEM_PROMPT = """
+You are an empathetic emotional-support assistant.
+
+Rules:
+- Acknowledge emotions.
+- Validate feelings.
+- Be warm and supportive.
+- Respond in 2-4 sentences.
+- Do NOT give direct advice.
+- Do NOT tell users what they should do.
+- Avoid:
+  * You should
+  * You need to
+  * You must
+  * Try to
+  * Consider doing
+
+Focus on understanding emotions.
+"""
+
+while True:
+
+    user = input("\nUser: ").strip()
+
+    if user.lower() in ["exit", "quit"]:
+        print("Goodbye!")
+        break
+
+    # --------------------------------------------------
+    # EMOTION ANALYSIS
+    # --------------------------------------------------
+
+    emo = emotion.predict(user)[0]
+
+    vad = (
+        emo["valence"],
+        emo["arousal"],
+        emo["dominance"]
+    )
+
+    # --------------------------------------------------
+    # MEMORY
+    # --------------------------------------------------
+
+    state_label = "general_distress"
+
+    if emo["valence"] > 0:
+        state_label = "positive_engagement"
+
+    memory.add_turn(
+        text=user,
+        vad=vad,
+        state_label=state_label
+    )
+
+    memory_context = memory.get_context_injection()
+
+    # --------------------------------------------------
+    # RAG RETRIEVAL
+    # --------------------------------------------------
+
+    docs, reasoning = rag.retrieve(
+        query_text=user,
+        user_state_vad=vad,
+        mode="vad_augmented"
+    )
+
+    context = "\n".join(
+        f"- {doc}"
+        for doc in docs[:3]
+    )
+
+    # --------------------------------------------------
+    # DEBUG
+    # --------------------------------------------------
+
+    print("\n========== EMOTION ==========")
+
+    try:
+        print(
+            "Top Emotion:",
+            emo["top_emotions"][0]["label"]
+        )
+
+        print(
+            "Score:",
+            round(
+                emo["top_emotions"][0]["score"],
+                3
+            )
+        )
+
+    except Exception:
+        pass
+
+    print("Valence  :", round(vad[0], 3))
+    print("Arousal  :", round(vad[1], 3))
+    print("Dominance:", round(vad[2], 3))
+
+    print("\n========== MEMORY ==========")
+    print(memory_context)
+
+    print("\n========== RETRIEVED DOCS ==========")
+
+    for i, d in enumerate(docs[:3], start=1):
+        print(f"{i}. {d[:120]}")
+
+    # --------------------------------------------------
+    # PROMPT
+    # --------------------------------------------------
+
+    system = SYSTEM_PROMPT
+
+    if memory_context:
+        system += (
+            "\n\nConversation Context:\n"
+            + memory_context
+        )
+
+    system += (
+        "\n\nRelevant Emotional Examples:\n"
+        + context
+    )
+
+    messages = [
+        {
+            "role": "system",
+            "content": system,
+        },
+        {
+            "role": "user",
+            "content": user,
+        },
+    ]
+
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+    ).to(model.device)
+
+    # --------------------------------------------------
+    # GENERATION
+    # --------------------------------------------------
+
+    with torch.no_grad():
+
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=120,
+            do_sample=True,
+            temperature=0.7,
+            top_p=0.9,
+            repetition_penalty=1.1,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+
+    generated = outputs[0][
+        inputs["input_ids"].shape[1]:
+    ]
+
+    response = tokenizer.decode(
+        generated,
+        skip_special_tokens=True,
+    ).strip()
+
+    response = response.replace(
+        "<|assistant|>",
+        ""
+    ).strip()
+
+    # --------------------------------------------------
+    # BEHAVIORAL GATE
+    # --------------------------------------------------
+
+    advice_prob = gate.predict_proba([response])[0]
+
+    print("\n========== GATE ==========")
+print("Advice Probability:", round(advice_prob,  4))
+    print("\n========== GATE ==========")
+    print("Advice Detected:", advice_detected)
+
+    if advice_detected:
+
+        print("Fallback activated.")
+
+        response = (
+            "I can hear how much emotional weight this situation is carrying for you. "
+            "It sounds painful, overwhelming, and difficult to sit with these feelings. "
+            "Thank you for sharing what you're going through."
+        )
+
+    # --------------------------------------------------
+    # RESPONSE
+    # --------------------------------------------------
+
+    print("\n========== BOT ==========")
+    print(response)
